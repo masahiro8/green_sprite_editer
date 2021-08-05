@@ -6,8 +6,8 @@
     :mainCanvasRect="mainCanvasRect"
     @onselect="onSelect"
   >
-    <img class="image" :src="getImageSrc()"
-  /></Sprite>
+    <img class="image" :src="getImageSrc()" />
+  </Sprite>
 </template>
 <script>
 import Sprite from "./_Sprite.vue";

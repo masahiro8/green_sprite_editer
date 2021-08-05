@@ -4,19 +4,31 @@
       <div class="leftPanel">
         <button @click="add">VR MONKEY</button>
         <button @click="showCanvas">Draw Line</button>
+        <button @click="addText">Add Text</button>
       </div>
       <div class="mainCanvas" @click="clickOutside">
         <!-- スプライト操作メニュー -->
         <SpriteEditMenu :isSelected="selectedId" @ondelete="deleteSprite" />
-        <!-- スプライト -->
+        <!-- 画像 -->
         <SpriteImage
-          v-for="item in items"
+          v-for="item in itemsImages"
           :key="item.id"
           :item="item"
           :selected="selectedId === item.id"
           :onUpdate="onUpdate"
           :mainCanvasRect="mainCanvasRect"
           @onselect="onSelect"
+        />
+        <!-- テキスト -->
+        <SpriteText
+          v-for="item in itemsText"
+          :key="item.id"
+          :item="item"
+          :selected="selectedId === item.id"
+          :onUpdate="onUpdate"
+          :mainCanvasRect="mainCanvasRect"
+          @onselect="onSelect"
+          @update-text="updateText"
         />
         <!-- 手書用のキャンバス -->
         <div ref="mainCanvas" class="innerCanvas">
@@ -34,7 +46,9 @@
 
 <script>
 // import Sprite from "@/components/Sprite.vue";
+import { getUniqueId } from "@/util/Util.js";
 import SpriteImage from "@/components/SpriteImage.vue";
+import SpriteText from "@/components/SpriteText.vue";
 import Canvas from "@/components/Canvas/Canvas.vue";
 import { Firebase } from "@/util/FirebaseUtil.js";
 import SpriteEditMenu from "@/components/SpriteEditMenu/index.vue";
@@ -47,6 +61,7 @@ export default {
   components: {
     // Sprite,
     SpriteImage,
+    SpriteText,
     Canvas,
     SpriteEditMenu,
   },
@@ -67,6 +82,16 @@ export default {
       // TODO 設定した描画領域のサイズを取得
       return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
     },
+    itemsImages() {
+      return this.items.filter((item) => {
+        return item.image_url || item.image_base64;
+      });
+    },
+    itemsText() {
+      return this.items.filter((item) => {
+        return item.text;
+      });
+    },
   },
   async mounted() {
     // キャンバスのサイズを取得
@@ -81,19 +106,16 @@ export default {
       height: mainCanvasRect.height,
       scale: mainCanvasRect.scale,
     };
-    console.log({ ...this.mainCanvasRect });
-
     // Firebaseから取得
     const data = await this.Firebase.getData();
-    console.log(data);
     this.items = data;
   },
   methods: {
     //　画像スプライトを追加
     add() {
+      const id = getUniqueId(this.items);
       const index = Math.floor(Math.random() * colors.length);
       const items = [...this.items];
-      const id = items.length + 1;
       items.push({
         id,
         color: colors[index],
@@ -114,9 +136,9 @@ export default {
 
     // キャンバススプライトを追加
     addSpriteFromCanvas(base64Image, rect) {
+      const id = getUniqueId(this.items);
       const index = Math.floor(Math.random() * colors.length);
       const items = [...this.items];
-      const id = items.length + 1;
       items.push({
         id,
         color: colors[index],
@@ -134,11 +156,36 @@ export default {
       this.selectedId = id;
     },
 
-    deleteSprite() {
+    addText() {
+      const id = getUniqueId(this.items);
+      const index = Math.floor(Math.random() * colors.length);
       const items = [...this.items];
-      const index = items.findIndex((item) => {
+      items.push({
+        id,
+        color: colors[index],
+        image_url: null,
+        image_base64: null,
+        text: "text",
+        transform: {
+          x: this.getViewCenter.x,
+          y: this.getViewCenter.y,
+          width: 100,
+          height: 100,
+          rotation: 0,
+        },
+      });
+      this.items = items;
+      this.selectedId = id;
+    },
+
+    deleteSprite() {
+      console.log("deleteSprite ", this.items, this.selectedId);
+      const items = [...this.items];
+      const index = this.items.findIndex((item) => {
+        console.log("deleteSprite ", item.id);
         return item.id === this.selectedId;
       });
+
       items.splice(index, 1);
       this.items = items;
     },
@@ -167,8 +214,23 @@ export default {
       console.log([...this.items]);
     },
 
+    //テキストを更新
+    updateText(updatedItem) {
+      console.log("updateText", { ...updatedItem });
+      let items = [...this.items];
+      items = items.map((item) => {
+        if (item.id === updatedItem.id) {
+          return updatedItem;
+        }
+        return item;
+      });
+      this.items = items;
+      this.Firebase.setData(this.items);
+    },
+
     onSelect(id) {
       this.selectedId = id;
+      console.log("onSelect ", id);
     },
 
     clickOutside() {
