@@ -7,7 +7,7 @@
       </div>
       <div class="mainCanvas" @click="clickOutside">
         <!-- スプライト操作メニュー -->
-        <SpriteEditMenu :isSelected="selectedId" @on-delete="deleteSprite" />
+        <SpriteEditMenu :isSelected="selectedId" @ondelete="deleteSprite" />
         <!-- スプライト -->
         <SpriteImage
           v-for="item in items"

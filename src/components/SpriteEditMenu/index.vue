@@ -7,7 +7,7 @@
 export default {
   methods: {
     onDelete() {
-      this.$emit("on-delete");
+      this.$emit("ondelete");
     },
   },
 };
