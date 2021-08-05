@@ -179,15 +179,14 @@ export default {
     },
 
     deleteSprite() {
-      console.log("deleteSprite ", this.items, this.selectedId);
       const items = [...this.items];
       const index = this.items.findIndex((item) => {
-        console.log("deleteSprite ", item.id);
         return item.id === this.selectedId;
       });
 
       items.splice(index, 1);
       this.items = items;
+      this.Firebase.setData(this.items);
     },
 
     // 手書き描画
@@ -201,7 +200,6 @@ export default {
 
     // レイアウト更新
     onUpdate(id, transform) {
-      console.log(id, { ...transform });
       let items = [...this.items];
       items = items.map((item) => {
         if (item.id === id) {
@@ -211,12 +209,10 @@ export default {
       });
       this.items = items;
       this.Firebase.setData(this.items);
-      console.log([...this.items]);
     },
 
     //テキストを更新
     updateText(updatedItem) {
-      console.log("updateText", { ...updatedItem });
       let items = [...this.items];
       items = items.map((item) => {
         if (item.id === updatedItem.id) {

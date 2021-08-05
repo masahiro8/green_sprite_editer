@@ -21,6 +21,7 @@ export default {
     return {
       content: "",
       innerContent: "",
+      updateTimer: null,
     };
   },
   mounted() {
@@ -30,12 +31,9 @@ export default {
     this.$watch(
       () => this.selected,
       (newVal, oldVal) => {
-        // 選択から外れたら
+        // 選択から外れたら更新
         if (!newVal && newVal !== oldVal) {
-          console.log("innerContent", this.content);
-          const item = this.item;
-          item.text = `${this.content}`;
-          this.$emit("update-text", item);
+          this.updateValue();
         }
       }
     );
@@ -65,11 +63,20 @@ export default {
   },
   methods: {
     sync(e) {
+      clearTimeout(this.updateTimer);
       let text = e.target.innerHTML;
       text = text.replace(/<br>/gi, "\n");
       text = text.replace(/(<\/([^>]+)>)/gi, "");
       text = text.replace(/(<([^>]+)>)/gi, "\n");
       this.content = text;
+      this.updateTimer = setTimeout(() => {
+        this.updateValue();
+      }, 1000);
+    },
+    updateValue() {
+      const item = this.item;
+      item.text = `${this.content}`;
+      this.$emit("update-text", item);
     },
     onSelect(id) {
       this.$emit("onselect", id);
