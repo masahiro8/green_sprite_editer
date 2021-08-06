@@ -52,6 +52,7 @@ import SpriteText from "@/components/SpriteText.vue";
 import Canvas from "@/components/Canvas/Canvas.vue";
 import { Firebase } from "@/util/FirebaseUtil.js";
 import SpriteEditMenu from "@/components/SpriteEditMenu/index.vue";
+import { TEXT_ALIGN, TEXT_COLOR, TEXT_SIZE } from "@/constants/SPRITE_TEXT.js";
 const colors = ["red", "blue", "green"];
 const image =
   "https://storage.googleapis.com/co_backham_me/images/vrmonkey.png";
@@ -166,6 +167,10 @@ export default {
         image_url: null,
         image_base64: null,
         text: "text",
+        text_align: 1,
+        text_size: 1,
+        text_color: 1,
+        text_bold: false,
         transform: {
           x: this.getViewCenter.x,
           y: this.getViewCenter.y,
