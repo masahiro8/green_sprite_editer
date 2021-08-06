@@ -1,5 +1,6 @@
 <template>
   <DDR
+    ref="spriteParent"
     :value="item.transform"
     :active="selected"
     :rotatable="rotatable"
@@ -19,6 +20,7 @@
     @rotate-end="onRotateEnd"
   >
     <button
+      ref="sprite"
       class="sprite"
       @click.stop="$emit('onselect', item.id)"
       :style="`width: 100%; height: 100%; background:rgba(0,0,0,0)`"
@@ -71,10 +73,13 @@ export default {
   mounted() {
     // セル情報とキャンバスサイズが変更されたらデータを正規化
     this.$watch(
-      () => [this.item, this.mainCanvasRect],
+      () => this.item,
       (newValue, oldValue) => {
         if (JSON.stringify(newValue) !== JSON.stringify(oldValue)) {
-          console.log("updated", newValue[0].id);
+          console.log("updated", newValue.id);
+          const item = newValue;
+          //zindex変更
+          this.setZindex(item.transform?.z_index);
         }
       },
       {
@@ -94,10 +99,12 @@ export default {
         deep: true,
       }
     );
-
-    this.$nextTick(() => {});
   },
   methods: {
+    setZindex(n) {
+      const z = n || this.item.transform?.z_index || 1;
+      this.$refs.spriteParent.$el.style.zIndex = z;
+    },
     onDrag(event, transform) {},
     onDragStart(event, transform) {},
     onDragEnd(event, transform) {

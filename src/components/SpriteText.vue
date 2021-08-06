@@ -135,7 +135,8 @@ export default {
 }
 .innerText {
   width: 100%;
-  white-space: pre-line;
+  word-break: break-all;
+  white-space: pre-wrap;
   user-select: none;
 
   &.selected {

@@ -10,7 +10,7 @@
         <!-- スプライト操作メニュー -->
         <SpriteEditMenu
           :items="items"
-          :isSelected="selectedId"
+          :selectedId="selectedId"
           @on-edit-items="onEditItems"
         />
         <!-- 画像 -->
@@ -111,11 +111,14 @@ export default {
       height: mainCanvasRect.height,
       scale: mainCanvasRect.scale,
     };
-    // Firebaseから取得
-    const data = await this.Firebase.getData();
-    this.items = data;
+    this.loadData();
   },
   methods: {
+    async loadData() {
+      // Firebaseから取得
+      const data = await this.Firebase.getData();
+      this.items = data;
+    },
     //　画像スプライトを追加
     add() {
       const id = getUniqueId(this.items);
@@ -191,18 +194,7 @@ export default {
     },
 
     onEditItems(items) {
-      this.items = items;
-      this.Firebase.setData(this.items);
-    },
-
-    deleteSprite() {
-      const items = [...this.items];
-      const index = this.items.findIndex((item) => {
-        return item.id === this.selectedId;
-      });
-
-      items.splice(index, 1);
-      this.items = items;
+      this.items = [...items];
       this.Firebase.setData(this.items);
     },
 

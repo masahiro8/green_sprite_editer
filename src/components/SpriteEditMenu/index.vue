@@ -22,9 +22,13 @@ export default {
     items: {
       type: Array,
     },
+    selectedId: {
+      type: Number,
+    },
   },
   methods: {
     onCopy() {},
+
     onToBack() {
       let z = getMaxZindex(this.items);
       this.items.forEach((item) => {
@@ -32,7 +36,7 @@ export default {
           z = item.transform.z_index;
         }
       });
-      let items = [...this.items];
+      let items = JSON.parse(JSON.stringify(this.items));
       items = items.map((item) => {
         if (item.id === this.selectedId) {
           item.transform.z_index = z - 1;
@@ -45,16 +49,17 @@ export default {
 
     //一番手前に
     onToFront() {
-      // let z = getMaxZindex(this.items);
-      // let items = [...this.items];
-      // items = items.map((item) => {
-      //   if (item.id === this.selectedId) {
-      //     item.transform.z_index = z + 1;
-      //     return item;
-      //   }
-      //   return item;
-      // });
-      // this.$emit("on-edit-items", items);
+      let z = getMaxZindex(this.items);
+      let items = JSON.parse(JSON.stringify(this.items));
+      items = items.map((item) => {
+        if (item.id === this.selectedId) {
+          let _item = { ...item };
+          _item.transform["z_index"] = z + 1;
+          return _item;
+        }
+        return item;
+      });
+      this.$emit("on-edit-items", items);
     },
 
     // 削除
