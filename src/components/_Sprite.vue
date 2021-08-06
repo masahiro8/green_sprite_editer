@@ -63,6 +63,10 @@ export default {
         return { x: 0, y: 0, height: 100, width: 100, scale: 1.0 };
       },
     },
+    isRotatable: {
+      type: Boolean,
+      default: true,
+    },
   },
   mounted() {
     // セル情報とキャンバスサイズが変更されたらデータを正規化
@@ -78,6 +82,20 @@ export default {
         deep: true,
       }
     );
+
+    // 回転チェック
+    this.$watch(
+      () => [this.isRotatable],
+      (newValue) => {
+        this.rotatable = newValue[0];
+      },
+      {
+        immediate: true,
+        deep: true,
+      }
+    );
+
+    this.$nextTick(() => {});
   },
   methods: {
     onDrag(event, transform) {},

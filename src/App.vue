@@ -8,7 +8,11 @@
       </div>
       <div class="mainCanvas" @click="clickOutside">
         <!-- スプライト操作メニュー -->
-        <SpriteEditMenu :isSelected="selectedId" @ondelete="deleteSprite" />
+        <SpriteEditMenu
+          :items="items"
+          :isSelected="selectedId"
+          @on-edit-items="onEditItems"
+        />
         <!-- 画像 -->
         <SpriteImage
           v-for="item in itemsImages"
@@ -123,6 +127,7 @@ export default {
         image_url: image,
         image_base64: null,
         transform: {
+          z_index: 1,
           x: this.getViewCenter.x,
           y: this.getViewCenter.y,
           width: 100,
@@ -146,6 +151,7 @@ export default {
         image_url: "",
         image_base64: base64Image,
         transform: {
+          z_index: 1,
           x: rect.x,
           y: rect.y,
           width: rect.width,
@@ -172,6 +178,7 @@ export default {
         text_color: 1,
         text_bold: false,
         transform: {
+          z_index: 1,
           x: this.getViewCenter.x,
           y: this.getViewCenter.y,
           width: 100,
@@ -181,6 +188,11 @@ export default {
       });
       this.items = items;
       this.selectedId = id;
+    },
+
+    onEditItems(items) {
+      this.items = items;
+      this.Firebase.setData(this.items);
     },
 
     deleteSprite() {

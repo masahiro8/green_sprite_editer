@@ -4,6 +4,7 @@
     :selected="selected"
     :onUpdate="onUpdate"
     :mainCanvasRect="mainCanvasRect"
+    :isRotatable="false"
     @onselect="onSelect"
     ><div>
       <div
@@ -66,6 +67,7 @@ export default {
       if (text_size) _class += `size_${getKey(TEXT_SIZE, text_size)} `;
       if (text_align) _class += `align_${getKey(TEXT_ALIGN, text_align)} `;
       if (text_color) _class += `color_${getKey(TEXT_COLOR, text_color)} `;
+      if (this.selected) _class += "selected";
       return _class;
     },
   },
@@ -134,6 +136,11 @@ export default {
 .innerText {
   width: 100%;
   white-space: pre-line;
+  user-select: none;
+
+  &.selected {
+    user-select: text;
+  }
 }
 .size {
   &_small {

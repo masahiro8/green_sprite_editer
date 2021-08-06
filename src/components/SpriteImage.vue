@@ -53,5 +53,6 @@ export default {
 .image {
   width: 100%;
   pointer-events: none;
+  user-select: none;
 }
 </style>
