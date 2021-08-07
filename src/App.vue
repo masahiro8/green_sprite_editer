@@ -6,7 +6,7 @@
         <button @click="showCanvas">Draw Line</button>
         <button @click="addText">Add Text</button>
       </div>
-      <div class="mainCanvas" @click="clickOutside">
+      <div class="mainPanel" @click="clickOutside">
         <!-- スプライト操作メニュー -->
         <SpriteEditMenu
           :items="items"
@@ -36,7 +36,7 @@
           @update-text="updateText"
         />
         <!-- 手書用のキャンバス -->
-        <div ref="mainCanvas" class="innerCanvas">
+        <div ref="mainCanvas" class="mainCanvas">
           <Canvas
             v-if="canvas.isShow"
             :spriteId="canvas.tmpId"
@@ -44,6 +44,7 @@
             @close="canvas.isShow = false"
           />
         </div>
+        <!-- メイン画像 -->
       </div>
     </div>
   </div>
@@ -274,13 +275,13 @@ body {
   border-right: 1px solid black;
   background-color: #efefef;
 }
-.mainCanvas {
+.mainPanel {
   flex: 1;
   height: 100%;
   background-color: blue;
   position: relative;
 }
-.innerCanvas {
+.mainCanvas {
   width: 100%;
   height: 100%;
 }
