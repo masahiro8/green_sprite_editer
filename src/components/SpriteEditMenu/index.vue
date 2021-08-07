@@ -7,6 +7,7 @@
   </ul>
 </template>
 <script>
+import { getUniqueId } from "@/util/Util.js";
 const getMaxZindex = (items) => {
   let z = 0;
   items.forEach((item) => {
@@ -27,7 +28,20 @@ export default {
     },
   },
   methods: {
-    onCopy() {},
+    onCopy() {
+      let items = JSON.parse(JSON.stringify(this.items));
+      let target = items.find((item) => {
+        return item?.id === this.selectedId;
+      });
+      const id = getUniqueId(this.items);
+      const _target = JSON.parse(JSON.stringify(target));
+      _target.id = id;
+      items.push(_target);
+      this.$emit("on-edit-items", items);
+      this.$nextTick(() => {
+        this.$emit("on-select-id", id);
+      });
+    },
 
     onToBack() {
       let z = getMaxZindex(this.items);

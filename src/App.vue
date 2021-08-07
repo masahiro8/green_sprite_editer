@@ -11,6 +11,7 @@
         <SpriteEditMenu
           :items="items"
           :selectedId="selectedId"
+          @on-select-id="onSelect"
           @on-edit-items="onEditItems"
         />
         <!-- 画像 -->
@@ -117,7 +118,7 @@ export default {
     async loadData() {
       // Firebaseから取得
       const data = await this.Firebase.getData();
-      this.items = data;
+      this.items = data.filter((v) => v);
     },
     //　画像スプライトを追加
     add() {
@@ -211,7 +212,7 @@ export default {
     onUpdate(id, transform) {
       let items = [...this.items];
       items = items.map((item) => {
-        if (item.id === id) {
+        if (item && item.id === id) {
           item.transform = transform;
         }
         return item;
@@ -224,7 +225,7 @@ export default {
     updateText(updatedItem) {
       let items = [...this.items];
       items = items.map((item) => {
-        if (item.id === updatedItem.id) {
+        if (item && item.id === updatedItem.id) {
           return updatedItem;
         }
         return item;
