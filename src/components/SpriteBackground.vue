@@ -17,10 +17,24 @@ export default {
       selected: false,
     };
   },
+  mounted() {
+    this.$watch(
+      () => this.active,
+      (newValue) => {
+        this.selected = newValue;
+      },
+      {
+        immediate: true,
+      }
+    );
+  },
   components: {
     Sprite,
   },
   props: {
+    active: {
+      type: Boolean,
+    },
     item: {
       type: Object,
       default: null,

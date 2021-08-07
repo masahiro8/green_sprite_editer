@@ -53,7 +53,7 @@ export default {
       let items = JSON.parse(JSON.stringify(this.items));
       items = items.map((item) => {
         if (item.id === this.selectedId) {
-          item.transform.z_index = z - 1;
+          item.transform.z_index = z - 1 < 0 ? 0 : z - 1;
           return item;
         }
         return item;

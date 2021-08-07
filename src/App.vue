@@ -10,12 +10,14 @@
         <!-- 背景スプライト -->
         <SpriteBackground
           :item="background"
+          :active="backgroundActive"
           :onUpdate="onUpdateBackground"
           :mainCanvasRect="mainCanvasRect"
           @onselect="onSelect"
         />
         <!-- スプライト操作メニュー -->
         <SpriteEditMenu
+          v-if="!canvas.isShow"
           :items="items"
           :selectedId="selectedId"
           @on-select-id="onSelect"
@@ -43,7 +45,11 @@
           @update-text="updateText"
         />
         <!-- 手書用のキャンバス -->
-        <div ref="mainCanvas" class="mainCanvas">
+        <div
+          ref="mainCanvas"
+          class="mainCanvas"
+          :class="canvas.isShow ? 'show' : ''"
+        >
           <Canvas
             v-if="canvas.isShow"
             :spriteId="canvas.tmpId"
@@ -98,10 +104,11 @@ export default {
           x: 0,
           y: 0,
           width: 800,
-          height: 600,
+          height: 800,
           rotation: 0,
         },
       },
+      backgroundActive: false,
       selectedId: null,
       mainCanvasRect: { x: 100, y: 100, height: 100, width: 100, scale: 1.0 },
     };
@@ -156,7 +163,7 @@ export default {
         image_url: image,
         image_base64: null,
         transform: {
-          z_index: 1,
+          z_index: 100,
           x: this.getViewCenter.x,
           y: this.getViewCenter.y,
           width: 100,
@@ -180,7 +187,7 @@ export default {
         image_url: "",
         image_base64: base64Image,
         transform: {
-          z_index: 1,
+          z_index: 100,
           x: rect.x,
           y: rect.y,
           width: rect.width,
@@ -207,7 +214,7 @@ export default {
         text_color: 1,
         text_bold: false,
         transform: {
-          z_index: 1,
+          z_index: 100,
           x: this.getViewCenter.x,
           y: this.getViewCenter.y,
           width: 100,
@@ -231,6 +238,7 @@ export default {
       canvas.tmpId = Math.floor(Math.random() * 99999);
       this.canvas = canvas;
       this.selectedId = null;
+      this.backgroundActive = false;
     },
 
     // レイアウト更新
@@ -270,6 +278,7 @@ export default {
 
     onSelect(id) {
       this.selectedId = id;
+      this.backgroundActive = false;
       console.log("onSelect ", id);
     },
 
@@ -283,7 +292,7 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 body {
   margin: 0;
   padding: 0;
@@ -311,22 +320,28 @@ body {
 .mainPanel {
   flex: 1;
   height: 100%;
-  background-color: #ccc;
   position: relative;
   min-width: 800px;
-  min-height: 600px;
+  min-height: 800px;
 }
 .mainCanvas {
   width: 100%;
   height: 100%;
+  position: relative;
+  z-index: 9999;
+  pointer-events: none;
+  &.show {
+    pointer-events: all;
+    background-color: rgba(0, 0, 0, 0.3);
+  }
 }
 .backgroundImage {
   top: 0;
   left: 0;
   width: 800px;
-  height: 600px;
+  height: 800px;
   border: 1px solid red;
   position: absolute;
-  z-index: 0;
+  z-index: -99;
 }
 </style>
