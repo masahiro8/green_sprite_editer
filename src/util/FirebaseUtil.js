@@ -20,9 +20,11 @@ export const Firebase = () => {
   const db = firebase.database();
 
   const setData = (json) => {
-    db.ref("drawing").set({
-      content: json
-    });
+    db.ref("drawing/content").set(json);
+  };
+
+  const setBackground = (obj) => {
+    db.ref("drawing/background").set(obj);
   };
 
   const getData = () => {
@@ -34,8 +36,19 @@ export const Firebase = () => {
     });
   };
 
+  const getBackground = () => {
+    return new Promise((resolved) => {
+      db.ref("drawing").on("value", (snapshot) => {
+        const data = snapshot.val();
+        resolved(data.background);
+      });
+    });
+  };
+
   return {
     setData,
-    getData
+    getData,
+    setBackground,
+    getBackground
   };
 };

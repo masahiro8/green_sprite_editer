@@ -1,4 +1,5 @@
 export const getUniqueId = (items) => {
+  if (!items || items.length === 0) return 1;
   const _items = JSON.parse(JSON.stringify(items));
   _items.sort(function (a, b) {
     if (!a || !b) return 0;

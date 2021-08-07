@@ -7,6 +7,13 @@
         <button @click="addText">Add Text</button>
       </div>
       <div class="mainPanel" @click="clickOutside">
+        <!-- 背景スプライト -->
+        <SpriteBackground
+          :item="background"
+          :onUpdate="onUpdateBackground"
+          :mainCanvasRect="mainCanvasRect"
+          @onselect="onSelect"
+        />
         <!-- スプライト操作メニュー -->
         <SpriteEditMenu
           :items="items"
@@ -44,7 +51,6 @@
             @close="canvas.isShow = false"
           />
         </div>
-        <!-- メイン画像 -->
       </div>
     </div>
   </div>
@@ -55,6 +61,7 @@
 import { getUniqueId } from "@/util/Util.js";
 import SpriteImage from "@/components/SpriteImage.vue";
 import SpriteText from "@/components/SpriteText.vue";
+import SpriteBackground from "@/components/SpriteBackground.vue";
 import Canvas from "@/components/Canvas/Canvas.vue";
 import { Firebase } from "@/util/FirebaseUtil.js";
 import SpriteEditMenu from "@/components/SpriteEditMenu/index.vue";
@@ -69,17 +76,32 @@ export default {
     // Sprite,
     SpriteImage,
     SpriteText,
+    SpriteBackground,
     Canvas,
     SpriteEditMenu,
   },
   data: () => {
     return {
       Firebase: Firebase(),
+      //キャンバス作るたびに仮のidをふる
       canvas: {
         tmpId: null,
         isShow: false,
-      }, //キャンバス作るたびに仮のidをふる
+      },
       items: [],
+      //図面
+      background: {
+        id: 10000,
+        image_url: image,
+        transform: {
+          z_index: 0,
+          x: 0,
+          y: 0,
+          width: 800,
+          height: 600,
+          rotation: 0,
+        },
+      },
       selectedId: null,
       mainCanvasRect: { x: 100, y: 100, height: 100, width: 100, scale: 1.0 },
     };
@@ -119,7 +141,9 @@ export default {
     async loadData() {
       // Firebaseから取得
       const data = await this.Firebase.getData();
-      this.items = data.filter((v) => v);
+      if (data) this.items = data.filter((v) => v);
+      const background = await this.Firebase.getBackground();
+      if (background) this.background = background;
     },
     //　画像スプライトを追加
     add() {
@@ -222,6 +246,15 @@ export default {
       this.Firebase.setData(this.items);
     },
 
+    // 図面更新
+    onUpdateBackground(id, transform) {
+      console.log(id, { ...transform });
+      const background = { ...this.background };
+      background.transform = transform;
+      this.background = background;
+      this.Firebase.setBackground(this.background);
+    },
+
     //テキストを更新
     updateText(updatedItem) {
       let items = [...this.items];
@@ -278,11 +311,22 @@ body {
 .mainPanel {
   flex: 1;
   height: 100%;
-  background-color: blue;
+  background-color: #ccc;
   position: relative;
+  min-width: 800px;
+  min-height: 600px;
 }
 .mainCanvas {
   width: 100%;
   height: 100%;
+}
+.backgroundImage {
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 600px;
+  border: 1px solid red;
+  position: absolute;
+  z-index: 0;
 }
 </style>
