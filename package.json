@@ -10,6 +10,7 @@
   "dependencies": {
     "@vue/cli-plugin-babel": "4.1.1",
     "firebase": "8.8.1",
+    "html2canvas": "1.2.1",
     "vue": "^2.6.11",
     "yoyoo-ddr": "0.3.1"
   },

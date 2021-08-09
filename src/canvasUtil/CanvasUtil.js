@@ -94,8 +94,8 @@ export const CanvasUtil = () => {
 
   const convertPointer = (event) => {
     const p = {
-      x: event.clientX * scaleRate.x,
-      y: event.clientY * scaleRate.y
+      x: event.clientX,
+      y: event.clientY
     };
     return {
       x: p.x - marginSize.x,

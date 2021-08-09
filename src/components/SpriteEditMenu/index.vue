@@ -7,16 +7,7 @@
   </ul>
 </template>
 <script>
-import { getUniqueId } from "@/util/Util.js";
-const getMaxZindex = (items) => {
-  let z = 0;
-  items.forEach((item) => {
-    if ("z_index" in item.transform && z < item.transform.z_index) {
-      z = item.transform.z_index;
-    }
-  });
-  return z;
-};
+import { getUniqueId, getMaxZindex } from "@/util/Util.js";
 
 export default {
   props: {
@@ -28,6 +19,9 @@ export default {
     },
   },
   methods: {
+    /**
+     * コピー
+     */
     onCopy() {
       let items = JSON.parse(JSON.stringify(this.items));
       let target = items.find((item) => {
@@ -43,6 +37,9 @@ export default {
       });
     },
 
+    /**
+     * 最下層へ
+     */
     onToBack() {
       let z = getMaxZindex(this.items);
       this.items.forEach((item) => {
@@ -61,7 +58,9 @@ export default {
       this.$emit("on-edit-items", items);
     },
 
-    //一番手前に
+    /**
+     * 最上層へ
+     */
     onToFront() {
       let z = getMaxZindex(this.items);
       let items = JSON.parse(JSON.stringify(this.items));
@@ -76,7 +75,9 @@ export default {
       this.$emit("on-edit-items", items);
     },
 
-    // 削除
+    /**
+     * 削除
+     */
     deleteSprite() {
       const items = [...this.items];
       const index = this.items.findIndex((item) => {

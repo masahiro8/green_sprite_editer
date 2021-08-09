@@ -10,3 +10,13 @@ export const getUniqueId = (items) => {
   console.log("unique", _items[0].id);
   return _items[0].id + 1;
 };
+
+export const getMaxZindex = (items) => {
+  let z = 0;
+  items.forEach((item) => {
+    if ("z_index" in item.transform && z < item.transform.z_index) {
+      z = item.transform.z_index;
+    }
+  });
+  return z;
+};

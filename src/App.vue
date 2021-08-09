@@ -2,61 +2,19 @@
   <div id="app">
     <div class="drawApp">
       <div class="leftPanel">
-        <button @click="add">VR MONKEY</button>
-        <button @click="showCanvas">Draw Line</button>
-        <button @click="addText">Add Text</button>
+        <button @click="onCallMainpanel('add')">VR MONKEY</button>
+        <button @click="onCallMainpanel('showCanvas')">Draw Line</button>
+        <button @click="onCallMainpanel('addText')">Add Text</button>
+        <button @click="onScreenShot">ScreenShot</button>
       </div>
-      <div class="mainPanel" @click="clickOutside">
-        <!-- 背景スプライト -->
-        <SpriteBackground
-          :item="background"
-          :active="backgroundActive"
-          :onUpdate="onUpdateBackground"
-          :mainCanvasRect="mainCanvasRect"
-          @onselect="onSelect"
-        />
-        <!-- スプライト操作メニュー -->
-        <SpriteEditMenu
-          v-if="!canvas.isShow"
+      <div id="mainPanel" class="mainPanel" @click="clickOutside">
+        <Mainpanel
+          ref="mainPanel"
           :items="items"
-          :selectedId="selectedId"
-          @on-select-id="onSelect"
-          @on-edit-items="onEditItems"
+          :background="background"
+          @on-update-items="onUpdateItems"
+          @on-update-background="onUpdateBackground"
         />
-        <!-- 画像 -->
-        <SpriteImage
-          v-for="item in itemsImages"
-          :key="item.id"
-          :item="item"
-          :selected="selectedId === item.id"
-          :onUpdate="onUpdate"
-          :mainCanvasRect="mainCanvasRect"
-          @onselect="onSelect"
-        />
-        <!-- テキスト -->
-        <SpriteText
-          v-for="item in itemsText"
-          :key="item.id"
-          :item="item"
-          :selected="selectedId === item.id"
-          :onUpdate="onUpdate"
-          :mainCanvasRect="mainCanvasRect"
-          @onselect="onSelect"
-          @update-text="updateText"
-        />
-        <!-- 手書用のキャンバス -->
-        <div
-          ref="mainCanvas"
-          class="mainCanvas"
-          :class="canvas.isShow ? 'show' : ''"
-        >
-          <Canvas
-            v-if="canvas.isShow"
-            :spriteId="canvas.tmpId"
-            @base64image="callbackPngImage"
-            @close="canvas.isShow = false"
-          />
-        </div>
       </div>
     </div>
   </div>
@@ -64,36 +22,23 @@
 
 <script>
 // import Sprite from "@/components/Sprite.vue";
-import { getUniqueId } from "@/util/Util.js";
-import SpriteImage from "@/components/SpriteImage.vue";
-import SpriteText from "@/components/SpriteText.vue";
-import SpriteBackground from "@/components/SpriteBackground.vue";
-import Canvas from "@/components/Canvas/Canvas.vue";
 import { Firebase } from "@/util/FirebaseUtil.js";
-import SpriteEditMenu from "@/components/SpriteEditMenu/index.vue";
-import { TEXT_ALIGN, TEXT_COLOR, TEXT_SIZE } from "@/constants/SPRITE_TEXT.js";
-const colors = ["red", "blue", "green"];
+import html2canvas from "html2canvas";
+/**
+ * 描画
+ */
+import Mainpanel from "@/components/Mainpanel.vue";
 const image =
   "https://storage.googleapis.com/co_backham_me/images/vrmonkey.png";
 
 export default {
   name: "App",
   components: {
-    // Sprite,
-    SpriteImage,
-    SpriteText,
-    SpriteBackground,
-    Canvas,
-    SpriteEditMenu,
+    Mainpanel,
   },
   data: () => {
     return {
       Firebase: Firebase(),
-      //キャンバス作るたびに仮のidをふる
-      canvas: {
-        tmpId: null,
-        isShow: false,
-      },
       items: [],
       //図面
       background: {
@@ -108,40 +53,10 @@ export default {
           rotation: 0,
         },
       },
-      backgroundActive: false,
-      selectedId: null,
-      mainCanvasRect: { x: 100, y: 100, height: 100, width: 100, scale: 1.0 },
     };
   },
-  computed: {
-    getViewCenter() {
-      // TODO 設定した描画領域のサイズを取得
-      return { x: window.innerWidth / 2, y: window.innerHeight / 2 };
-    },
-    itemsImages() {
-      return this.items.filter((item) => {
-        return item.image_url || item.image_base64;
-      });
-    },
-    itemsText() {
-      return this.items.filter((item) => {
-        return item.text;
-      });
-    },
-  },
+  computed: {},
   async mounted() {
-    // キャンバスのサイズを取得
-    // 座標・スケールの正規化をする必要がある
-    const mainCanvas = this.$refs.mainCanvas;
-    let mainCanvasRect = mainCanvas.getBoundingClientRect();
-    mainCanvasRect.scale = 1.0;
-    this.mainCanvasRect = {
-      x: mainCanvasRect.x,
-      y: mainCanvasRect.y,
-      width: mainCanvasRect.width,
-      height: mainCanvasRect.height,
-      scale: mainCanvasRect.scale,
-    };
     this.loadData();
   },
   methods: {
@@ -152,141 +67,30 @@ export default {
       const background = await this.Firebase.getBackground();
       if (background) this.background = background;
     },
-    //　画像スプライトを追加
-    add() {
-      const id = getUniqueId(this.items);
-      const index = Math.floor(Math.random() * colors.length);
-      const items = [...this.items];
-      items.push({
-        id,
-        color: colors[index],
-        image_url: image,
-        image_base64: null,
-        transform: {
-          z_index: 100,
-          x: this.getViewCenter.x,
-          y: this.getViewCenter.y,
-          width: 100,
-          height: 100,
-          rotation: 0,
-        },
-      });
-      this.items = items;
-      this.selectedId = id;
-      this.Firebase.setData(this.items);
+
+    clickOutside() {},
+
+    onCallMainpanel(method) {
+      console.log(this.$refs.mainPanel);
+      if (method === "add") this.$refs.mainPanel.add();
+      if (method === "showCanvas") this.$refs.mainPanel.showCanvas();
+      if (method === "addText") this.$refs.mainPanel.addText();
     },
 
-    // キャンバススプライトを追加
-    addSpriteFromCanvas(base64Image, rect) {
-      const id = getUniqueId(this.items);
-      const index = Math.floor(Math.random() * colors.length);
-      const items = [...this.items];
-      items.push({
-        id,
-        color: colors[index],
-        image_url: "",
-        image_base64: base64Image,
-        transform: {
-          z_index: 100,
-          x: rect.x,
-          y: rect.y,
-          width: rect.width,
-          height: rect.height,
-          rotation: 0,
-        },
-      });
-      this.items = items;
-      this.selectedId = id;
-    },
-
-    addText() {
-      const id = getUniqueId(this.items);
-      const index = Math.floor(Math.random() * colors.length);
-      const items = [...this.items];
-      items.push({
-        id,
-        color: colors[index],
-        image_url: null,
-        image_base64: null,
-        text: "text",
-        text_align: 1,
-        text_size: 1,
-        text_color: 1,
-        text_bold: false,
-        transform: {
-          z_index: 100,
-          x: this.getViewCenter.x,
-          y: this.getViewCenter.y,
-          width: 100,
-          height: 100,
-          rotation: 0,
-        },
-      });
-      this.items = items;
-      this.selectedId = id;
-    },
-
-    onEditItems(items) {
-      this.items = [...items];
-      this.Firebase.setData(this.items);
-    },
-
-    // 手書き描画
-    showCanvas() {
-      const canvas = { ...this.canvas };
-      canvas.isShow = true;
-      canvas.tmpId = Math.floor(Math.random() * 99999);
-      this.canvas = canvas;
-      this.selectedId = null;
-      this.backgroundActive = false;
-    },
-
-    // レイアウト更新
-    onUpdate(id, transform) {
-      let items = [...this.items];
-      items = items.map((item) => {
-        if (item && item.id === id) {
-          item.transform = transform;
-        }
-        return item;
-      });
+    onUpdateItems(items) {
       this.items = items;
       this.Firebase.setData(this.items);
     },
 
-    // 図面更新
-    onUpdateBackground(id, transform) {
-      console.log(id, { ...transform });
-      const background = { ...this.background };
-      background.transform = transform;
+    onUpdateBackground(background) {
       this.background = background;
       this.Firebase.setBackground(this.background);
     },
 
-    //テキストを更新
-    updateText(updatedItem) {
-      let items = [...this.items];
-      items = items.map((item) => {
-        if (item && item.id === updatedItem.id) {
-          return updatedItem;
-        }
-        return item;
+    onScreenShot() {
+      html2canvas(document.getElementById("mainPanel")).then(function (canvas) {
+        document.body.appendChild(canvas);
       });
-      this.items = items;
-      this.Firebase.setData(this.items);
-    },
-
-    onSelect(id) {
-      this.selectedId = id;
-      this.backgroundActive = false;
-      console.log("onSelect ", id);
-    },
-
-    clickOutside() {
-      // this.selectedId = null;
-    },
-    callbackPngImage({ base64, rect }) {
-      this.addSpriteFromCanvas(base64, rect);
     },
   },
 };
@@ -323,25 +127,5 @@ body {
   position: relative;
   min-width: 800px;
   min-height: 800px;
-}
-.mainCanvas {
-  width: 100%;
-  height: 100%;
-  position: relative;
-  z-index: 9999;
-  pointer-events: none;
-  &.show {
-    pointer-events: all;
-    background-color: rgba(0, 0, 0, 0.3);
-  }
-}
-.backgroundImage {
-  top: 0;
-  left: 0;
-  width: 800px;
-  height: 800px;
-  border: 1px solid red;
-  position: absolute;
-  z-index: -99;
 }
 </style>
