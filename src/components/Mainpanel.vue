@@ -1,5 +1,10 @@
 <template>
-  <div id="mainPanel" class="mainPanel">
+  <div
+    id="mainPanel"
+    class="mainPanel"
+    :class="readOnly ? 'readOnly' : ''"
+    @click="clickOutside"
+  >
     <!-- 背景スプライト -->
     <SpriteBackground
       :item="background"
@@ -111,6 +116,9 @@ export default {
     background: {
       type: Object,
     },
+    readOnly: {
+      type: Boolean,
+    },
   },
   async mounted() {
     // キャンバスのサイズを取得
@@ -129,6 +137,7 @@ export default {
   methods: {
     //　画像スプライトを追加
     add() {
+      if (this.readOnly) return;
       const id = getUniqueId(this.items);
       const index = Math.floor(Math.random() * colors.length);
       const z = getMaxZindex(this.items);
@@ -258,6 +267,11 @@ export default {
     callbackPngImage({ base64, rect }) {
       this.addSpriteFromCanvas(base64, rect);
     },
+
+    clickOutside() {
+      this.selectedId = null;
+      console.log("clickOutside");
+    },
   },
 };
 </script>
@@ -267,6 +281,9 @@ export default {
   width: 100%;
   height: 100%;
   position: relative;
+  &.readOnly {
+    pointer-events: none;
+  }
 }
 .mainCanvas {
   width: 100%;

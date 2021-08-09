@@ -7,7 +7,7 @@
         <button @click="onCallMainpanel('addText')">Add Text</button>
         <button @click="onScreenShot">ScreenShot</button>
       </div>
-      <div id="mainPanel" class="mainPanel" @click="clickOutside">
+      <div id="mainPanel" class="mainPanel">
         <Mainpanel
           ref="mainPanel"
           :items="items"
@@ -67,8 +67,6 @@ export default {
       const background = await this.Firebase.getBackground();
       if (background) this.background = background;
     },
-
-    clickOutside() {},
 
     onCallMainpanel(method) {
       console.log(this.$refs.mainPanel);
