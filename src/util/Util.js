@@ -20,3 +20,34 @@ export const getMaxZindex = (items) => {
   });
   return z;
 };
+
+export const toDataURL = (url) => {
+  fetch(url)
+    .then((response) => response.blob())
+    .then(
+      (blob) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        })
+    );
+};
+
+export const toDataURLCanvas = (url) => {
+  return new Promise((resolved) => {
+    let img = new Image();
+    img.crossOrigin = "Anonymous";
+    img.onload = function () {
+      let canvas = document.createElement("CANVAS");
+      let ctx = canvas.getContext("2d");
+      canvas.height = this.naturalHeight;
+      canvas.width = this.naturalWidth;
+      ctx.drawImage(this, 0, 0);
+      const dataURL = canvas.toDataURL("image/png");
+      resolved(dataURL);
+    };
+    img.src = url;
+  });
+};

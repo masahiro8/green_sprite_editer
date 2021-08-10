@@ -10,11 +10,15 @@
       <div id="mainPanel" class="mainPanel">
         <Mainpanel
           ref="mainPanel"
+          :readOnly="isShoot"
           :items="items"
           :background="background"
           @on-update-items="onUpdateItems"
           @on-update-background="onUpdateBackground"
         />
+      </div>
+      <div v-if="tmpScreenShot" class="previewScreenshot">
+        <img :src="tmpScreenShot" />
       </div>
     </div>
   </div>
@@ -39,8 +43,9 @@ export default {
   data: () => {
     return {
       Firebase: Firebase(),
+      // スプライト
       items: [],
-      //図面
+      // 背景図面
       background: {
         id: 10000,
         image_url: image,
@@ -53,6 +58,9 @@ export default {
           rotation: 0,
         },
       },
+      // スクショ
+      isShoot: false,
+      tmpScreenShot: null,
     };
   },
   computed: {},
@@ -86,8 +94,18 @@ export default {
     },
 
     onScreenShot() {
-      html2canvas(document.getElementById("mainPanel")).then(function (canvas) {
-        document.body.appendChild(canvas);
+      this.isShoot = true;
+      this.$nextTick(() => {
+        html2canvas(document.getElementById("mainPanel")).then((canvas) => {
+          canvas.id = "screenshot";
+          document.body.appendChild(canvas);
+          this.tmpScreenShot = canvas.toDataURL("image/png");
+          setTimeout(() => {
+            this.isShoot = false;
+            this.tmpScreenShot = null;
+            document.getElementById("screenshot").remove();
+          }, 3000);
+        });
       });
     },
   },
@@ -125,5 +143,28 @@ body {
   position: relative;
   min-width: 800px;
   min-height: 800px;
+}
+.mainPanelGoast {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+.previewScreenshot {
+  position: fixed;
+  bottom: 32px;
+  right: 32px;
+  width: 320px;
+  height: 320px;
+  display: flex;
+  align-items: center;
+  border: 1px solid black;
+  z-index: 999;
+  background-color: white;
+  img {
+    width: 100%;
+  }
 }
 </style>

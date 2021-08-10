@@ -15,14 +15,14 @@
     />
     <!-- スプライト操作メニュー -->
     <SpriteEditMenu
-      v-if="!canvas.isShow"
+      v-if="isShowSpriteEditMenu"
       :items="items"
       :selectedId="selectedId"
       @on-select-id="onSelect"
       @on-edit-items="onUpdateItems"
     />
     <!-- 画像 -->
-    <SpriteImage
+    <SpriteImageReadOnly
       v-for="item in itemsImages"
       :key="item.id"
       :item="item"
@@ -60,21 +60,22 @@
 
 <script>
 import { getUniqueId, getMaxZindex } from "@/util/Util.js";
-import SpriteImage from "@/components/SpriteImage.vue";
+// import SpriteImage from "@/components/SpriteImage.vue";
+import SpriteImageReadOnly from "@/components/SpriteImageReadOnly.vue";
 import SpriteText from "@/components/SpriteText.vue";
 import SpriteBackground from "@/components/SpriteBackground.vue";
 import Canvas from "@/components/Canvas/Canvas.vue";
 import { Firebase } from "@/util/FirebaseUtil.js";
 import SpriteEditMenu from "@/components/SpriteEditMenu/index.vue";
 const colors = ["red", "blue", "green"];
-const image =
-  "https://storage.googleapis.com/co_backham_me/images/vrmonkey.png";
+const image = "/images/_vrmonkey.png";
 
 export default {
   name: "Mainpanel",
   components: {
     // Sprite,
-    SpriteImage,
+    // SpriteImage,
+    SpriteImageReadOnly,
     SpriteText,
     SpriteBackground,
     Canvas,
@@ -107,6 +108,10 @@ export default {
       return this.items.filter((item) => {
         return item.text;
       });
+    },
+    isShowSpriteEditMenu() {
+      if (this.readOnly) return false;
+      return !this.canvas.isShow;
     },
   },
   props: {
