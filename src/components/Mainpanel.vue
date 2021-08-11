@@ -31,6 +31,15 @@
       :mainCanvasRect="mainCanvasRect"
       @onselect="onSelect"
     />
+    <SpriteSVG
+      v-for="item in itemsSVG"
+      :key="item.id"
+      :item="item"
+      :selected="selectedId === item.id"
+      :onUpdate="onUpdate"
+      :mainCanvasRect="mainCanvasRect"
+      @onselect="onSelect"
+    />
     <!-- テキスト -->
     <SpriteText
       v-for="item in itemsText"
@@ -62,13 +71,16 @@
 import { getUniqueId, getMaxZindex } from "@/util/Util.js";
 // import SpriteImage from "@/components/SpriteImage.vue";
 import SpriteImageReadOnly from "@/components/SpriteImageReadOnly.vue";
+import SpriteSVG from "@/components/SpriteSVG.vue";
 import SpriteText from "@/components/SpriteText.vue";
 import SpriteBackground from "@/components/SpriteBackground.vue";
 import Canvas from "@/components/Canvas/Canvas.vue";
 import { Firebase } from "@/util/FirebaseUtil.js";
 import SpriteEditMenu from "@/components/SpriteEditMenu/index.vue";
+
 const colors = ["red", "blue", "green"];
 const image = "/images/_vrmonkey.png";
+const shape = "/images/Rectangle.svg";
 
 export default {
   name: "Mainpanel",
@@ -78,6 +90,7 @@ export default {
     SpriteImageReadOnly,
     SpriteText,
     SpriteBackground,
+    SpriteSVG,
     Canvas,
     SpriteEditMenu,
   },
@@ -102,6 +115,11 @@ export default {
     itemsImages() {
       return this.items.filter((item) => {
         return item.image_url || item.image_base64;
+      });
+    },
+    itemsSVG() {
+      return this.items.filter((item) => {
+        return "svg" in item && item.svg;
       });
     },
     itemsText() {
@@ -151,6 +169,32 @@ export default {
         id,
         color: colors[index],
         image_url: image,
+        image_base64: null,
+        transform: {
+          z_index: z + 1,
+          x: this.getViewCenter.x,
+          y: this.getViewCenter.y,
+          width: 100,
+          height: 100,
+          rotation: 0,
+        },
+      });
+      this.selectedId = id;
+      this.onUpdateItems(items);
+    },
+
+    //　画像スプライトを追加
+    addShape() {
+      if (this.readOnly) return;
+      const id = getUniqueId(this.items);
+      const index = Math.floor(Math.random() * colors.length);
+      const z = getMaxZindex(this.items);
+      const items = [...this.items];
+      items.push({
+        id,
+        color: colors[index],
+        svg: shape,
+        image_url: null,
         image_base64: null,
         transform: {
           z_index: z + 1,

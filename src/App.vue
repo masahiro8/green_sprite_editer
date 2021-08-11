@@ -3,6 +3,7 @@
     <div class="drawApp">
       <div class="leftPanel">
         <button @click="onCallMainpanel('add')">VR MONKEY</button>
+        <button @click="onCallMainpanel('addShape')">四角</button>
         <button @click="onCallMainpanel('showCanvas')">Draw Line</button>
         <button @click="onCallMainpanel('addText')">Add Text</button>
         <button @click="onScreenShot">ScreenShot</button>
@@ -79,6 +80,7 @@ export default {
     onCallMainpanel(method) {
       console.log(this.$refs.mainPanel);
       if (method === "add") this.$refs.mainPanel.add();
+      if (method === "addShape") this.$refs.mainPanel.addShape();
       if (method === "showCanvas") this.$refs.mainPanel.showCanvas();
       if (method === "addText") this.$refs.mainPanel.addText();
     },

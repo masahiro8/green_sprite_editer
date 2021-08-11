@@ -8,7 +8,7 @@
     :resizable="resizable"
     :parent="false"
     :resizeHandler="['tl', 'tr', 'br', 'bl']"
-    :accept-ratio="true"
+    :accept-ratio="acceptRatio"
     @drag="onDrag"
     @drag-start="onDragStart"
     @drag-end="onDragEnd"
@@ -43,7 +43,6 @@ export default {
       draggable: true,
       resizable: true,
       parent: false,
-      acceptRatio: true,
     };
   },
   props: {
@@ -66,6 +65,10 @@ export default {
       },
     },
     isRotatable: {
+      type: Boolean,
+      default: true,
+    },
+    acceptRatio: {
       type: Boolean,
       default: true,
     },
