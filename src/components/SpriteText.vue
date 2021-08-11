@@ -6,26 +6,18 @@
     :mainCanvasRect="mainCanvasRect"
     :isRotatable="false"
     @onselect="onSelect"
-    ><div>
-      <div
-        class="innerText"
-        :class="getClass"
-        :contenteditable="selected"
-        v-text="innerContent"
-        @input="sync"
-      ></div>
-      <TextEditMenu
-        v-if="selected"
-        @text-align="updateTextAlign"
-        @text-size="updateTextSize"
-        @text-color="updateTextColor"
-      />
-    </div>
+  >
+    <div
+      class="innerText"
+      :class="getClass"
+      :contenteditable="selected"
+      v-text="innerContent"
+      @input="sync"
+    ></div>
   </Sprite>
 </template>
 <script>
 import Sprite from "./_Sprite.vue";
-import TextEditMenu from "./TextEditMenu/index.vue";
 import { TEXT_ALIGN, TEXT_SIZE, TEXT_COLOR } from "@/constants/SPRITE_TEXT.js";
 
 const getKey = (obj, val) => {
@@ -58,7 +50,6 @@ export default {
   },
   components: {
     Sprite,
-    TextEditMenu,
   },
   computed: {
     getClass() {
@@ -110,21 +101,6 @@ export default {
     },
     onSelect(id) {
       this.$emit("onselect", id);
-    },
-    updateTextAlign(id) {
-      let item = { ...this.item };
-      item.text_align = TEXT_ALIGN[getKey(TEXT_ALIGN, id)];
-      this.$emit("update-text", item);
-    },
-    updateTextSize(id) {
-      let item = { ...this.item };
-      item.text_size = TEXT_SIZE[getKey(TEXT_SIZE, id)];
-      this.$emit("update-text", item);
-    },
-    updateTextColor(id) {
-      let item = { ...this.item };
-      item.text_color = TEXT_COLOR[getKey(TEXT_COLOR, id)];
-      this.$emit("update-text", item);
     },
   },
 };

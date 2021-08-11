@@ -9,6 +9,7 @@
         <button @click="onScreenShot">ScreenShot</button>
       </div>
       <div id="mainPanel" class="mainPanel">
+        <!-- メイン画面 -->
         <Mainpanel
           ref="mainPanel"
           :readOnly="isShoot"
@@ -33,6 +34,7 @@ import html2canvas from "html2canvas";
  * 描画
  */
 import Mainpanel from "@/components/Mainpanel.vue";
+
 const image =
   "https://storage.googleapis.com/co_backham_me/images/vrmonkey.png";
 

@@ -1,16 +1,16 @@
 <template>
   <ul class="textEditMenu">
-    <li><button @click="align(TEXT_ALIGN.left)">left</button></li>
-    <li><button @click="align(TEXT_ALIGN.center)">center</button></li>
-    <li><button @click="align(TEXT_ALIGN.right)">right</button></li>
-    <li><button @click="size(TEXT_SIZE.small)">small</button></li>
-    <li><button @click="size(TEXT_SIZE.middle)">middle</button></li>
-    <li><button @click="size(TEXT_SIZE.big)">big</button></li>
-    <li><button @click="color(TEXT_COLOR.white)">white</button></li>
-    <li><button @click="color(TEXT_COLOR.black)">black</button></li>
-    <li><button @click="color(TEXT_COLOR.red)">red</button></li>
-    <li><button @click="color(TEXT_COLOR.blue)">blue</button></li>
-    <li><button @click="color(TEXT_COLOR.green)">green</button></li>
+    <li><button @click.stop="align(TEXT_ALIGN.left)">left</button></li>
+    <li><button @click.stop="align(TEXT_ALIGN.center)">center</button></li>
+    <li><button @click.stop="align(TEXT_ALIGN.right)">right</button></li>
+    <li><button @click.stop="size(TEXT_SIZE.small)">small</button></li>
+    <li><button @click.stop="size(TEXT_SIZE.middle)">middle</button></li>
+    <li><button @click.stop="size(TEXT_SIZE.big)">big</button></li>
+    <li><button @click.stop="color(TEXT_COLOR.white)">white</button></li>
+    <li><button @click.stop="color(TEXT_COLOR.black)">black</button></li>
+    <li><button @click.stop="color(TEXT_COLOR.red)">red</button></li>
+    <li><button @click.stop="color(TEXT_COLOR.blue)">blue</button></li>
+    <li><button @click.stop="color(TEXT_COLOR.green)">green</button></li>
   </ul>
 </template>
 <script>
@@ -38,9 +38,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 .textEditMenu {
-  position: absolute;
+  /* position: absolute; */
   list-style: none;
   display: flex;
-  top: -64px;
+  /* top: -64px; */
 }
 </style>

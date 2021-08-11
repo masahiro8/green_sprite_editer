@@ -5,6 +5,13 @@
     :class="readOnly ? 'readOnly' : ''"
     @click="clickOutside"
   >
+    <!-- svg,テキストを変更するメニュー -->
+    <Submenu
+      :items="items"
+      :selectedId="selectedId"
+      @update-svg="updateSvg"
+      @update-text="updateText"
+    />
     <!-- 背景スプライト -->
     <SpriteBackground
       :item="background"
@@ -22,7 +29,7 @@
       @on-edit-items="onUpdateItems"
     />
     <!-- 画像 -->
-    <SpriteImageReadOnly
+    <SpriteImage
       v-for="item in itemsImages"
       :key="item.id"
       :item="item"
@@ -39,6 +46,7 @@
       :onUpdate="onUpdate"
       :mainCanvasRect="mainCanvasRect"
       @onselect="onSelect"
+      @update-svg="updateSvg"
     />
     <!-- テキスト -->
     <SpriteText
@@ -69,8 +77,8 @@
 
 <script>
 import { getUniqueId, getMaxZindex } from "@/util/Util.js";
-// import SpriteImage from "@/components/SpriteImage.vue";
-import SpriteImageReadOnly from "@/components/SpriteImageReadOnly.vue";
+import Submenu from "@/components/SubmenuWrapper/index.vue";
+import SpriteImage from "@/components/SpriteImage.vue";
 import SpriteSVG from "@/components/SpriteSVG.vue";
 import SpriteText from "@/components/SpriteText.vue";
 import SpriteBackground from "@/components/SpriteBackground.vue";
@@ -80,14 +88,13 @@ import SpriteEditMenu from "@/components/SpriteEditMenu/index.vue";
 
 const colors = ["red", "blue", "green"];
 const image = "/images/_vrmonkey.png";
-const shape = "/images/Rectangle.svg";
+const shape = "/images/Rectangle_red.svg";
 
 export default {
   name: "Mainpanel",
   components: {
-    // Sprite,
-    // SpriteImage,
-    SpriteImageReadOnly,
+    Submenu,
+    SpriteImage,
     SpriteText,
     SpriteBackground,
     SpriteSVG,
@@ -119,7 +126,7 @@ export default {
     },
     itemsSVG() {
       return this.items.filter((item) => {
-        return "svg" in item && item.svg;
+        return "image_svg" in item && item.image_svg;
       });
     },
     itemsText() {
@@ -193,7 +200,7 @@ export default {
       items.push({
         id,
         color: colors[index],
-        svg: shape,
+        image_svg: shape,
         image_url: null,
         image_base64: null,
         transform: {
@@ -297,6 +304,18 @@ export default {
 
     //テキストを更新
     updateText(updatedItem) {
+      let items = [...this.items];
+      items = items.map((item) => {
+        if (item && item.id === updatedItem.id) {
+          return updatedItem;
+        }
+        return item;
+      });
+      this.onUpdateItems(items);
+    },
+
+    //SVGの更新
+    updateSvg(updatedItem) {
       let items = [...this.items];
       items = items.map((item) => {
         if (item && item.id === updatedItem.id) {

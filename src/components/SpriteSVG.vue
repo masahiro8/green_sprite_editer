@@ -41,8 +41,7 @@ export default {
       this.$emit("onselect", id);
     },
     getImageSrc() {
-      if (this.item.image_url) return this.item.image_url;
-      if (this.item.image_base64) return this.item.image_base64;
+      if (this.item.image_svg) return this.item.image_svg;
     },
   },
 };
@@ -50,6 +49,10 @@ export default {
 <style lang="scss" scoped>
 .sprite {
   border: none;
+}
+.svgWrapper {
+  width: 100%;
+  height: 100%;
 }
 .svg {
   width: 100%;
