@@ -5,6 +5,7 @@
     :onUpdate="onUpdate"
     :mainCanvasRect="mainCanvasRect"
     :isRotatable="false"
+    :acceptRatio="false"
     @onselect="onSelect"
   >
     <div
